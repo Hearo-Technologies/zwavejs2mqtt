@@ -932,7 +932,8 @@ app.post(
 				)
 			}
 			// TODO: validate settings using calss-validator
-			const settings = req.body
+			const settings = utils.overrideSettingsFromEnvironment(req.body)
+
 			restarting = true
 			await jsonStore.put(store.settings, settings)
 			await gw.close()

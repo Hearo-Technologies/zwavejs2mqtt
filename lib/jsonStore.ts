@@ -1,14 +1,15 @@
 // eslint-disable-next-line one-var
 import { readFile, writeFile } from 'jsonfile'
 import { storeBackupsDir, storeDir } from '../config/app'
-import { StoreFile, StoreKeys } from '../config/store'
+import { StoreFile, StoreKeys, Settings } from '../config/store';
 import { module } from './logger'
 import * as utils from './utils'
 import { recursive as merge } from 'merge'
 import archiver from 'archiver'
 import { createWriteStream } from 'fs'
 import { mkdirp, existsSync } from 'fs-extra'
-import { Response } from 'express'
+import { response, Response } from 'express'
+import { util } from 'chai';
 
 const logger = module('Store')
 
@@ -121,7 +122,11 @@ export class StorageHelper {
 
 	get(model: StoreFile) {
 		if (this._store[model.file]) {
-			return this._store[model.file]
+			let config = this._store[model.file]
+			if(model.file === 'settings.json' && config) {
+				config = utils.overrideSettingsFromEnvironment(config);
+			}
+			return config
 		} else {
 			throw Error('Requested file not present in store: ' + model.file)
 		}

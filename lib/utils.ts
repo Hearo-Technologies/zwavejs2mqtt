@@ -289,3 +289,31 @@ export function parseJSON(str: string): any {
 		return v
 	})
 }
+
+/** Apply ENVIRONMENT variables to settings  */
+export function overrideSettingsFromEnvironment(settings): any {
+	if(process.env['ZWAVEJS_CONFIG_SETTINGS_ZWAVE']) {
+		try {
+			settings.zwave = { ...settings.zwave, ...JSON.parse(process.env['ZWAVEJS_CONFIG_SETTINGS_ZWAVE']) }
+		} catch(error) {
+			throw Error(`Error parsing ZWAVE env var overrides: ${error}`)
+		}
+	}
+
+	if(process.env['ZWAVEJS_CONFIG_SETTINGS_MQTT']) {
+		try {
+			settings.mqtt = { ...settings.mqtt, ...JSON.parse(process.env['ZWAVEJS_CONFIG_SETTINGS_MQTT']) }
+		} catch(error) {
+			throw Error(`Error parsing MQTT env var overrides: ${error}`)
+		}
+	}
+
+	if(process.env['ZWAVEJS_CONFIG_SETTINGS_GATEWAY']) {
+		try {
+			settings.gateway = { ...settings.gateway, ...JSON.parse(process.env['ZWAVEJS_CONFIG_SETTINGS_GATEWAY']) }
+		} catch(error) {
+			throw Error(`Error parsing GATEWAY env var overrides: ${error}`)
+		}				
+	}
+	return settings
+}
